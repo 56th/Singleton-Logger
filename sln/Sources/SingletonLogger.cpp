@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <iomanip> // setprecision
 #include "SingletonLogger.hpp"
 
 SingletonLogger::SingletonLogger() : _inputCounter(0), mute(false) {
@@ -12,6 +13,12 @@ SingletonLogger::SingletonLogger() : _inputCounter(0), mute(false) {
 
 SingletonLogger::~SingletonLogger() {
 	rlutil::resetColor();
+}
+
+double SingletonLogger::_diff(clock_t t1, clock_t t2) const {
+	double diff = fabs(t2 - t1) / CLOCKS_PER_SEC;
+	if (timeUnits == SingletonLoggerTimeUnits::min) diff /= 60.;
+	return diff;
 }
 
 std::string SingletonLogger::_format(std::string const & s) const {
@@ -64,7 +71,7 @@ void SingletonLogger::end() {
 	rlutil::setColor(9);
 	std::cout << tab() << "[end] ";
 	rlutil::setColor(15);
-	std::cout << _diff(clock(), t) << '\n';
+	std::cout << std::fixed << std::setprecision(2) << _diff(clock(), t) << ' ' << (timeUnits == SingletonLoggerTimeUnits::sec ? 's' : 'm') << '\n';
 	rlutil::setColor(7);
 }
 

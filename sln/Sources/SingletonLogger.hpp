@@ -9,10 +9,12 @@
 #include "rlutil.h" // https://github.com/tapio/rlutil
 // for cross–platform terminal text coloring
 
+enum class SingletonLoggerTimeUnits { min, sec };
+
 class SingletonLogger {
 	std::stack<time_t> _processes; // stack of started proccesses
 	bool _rec = false;
-	double _diff(clock_t t1, clock_t t2) const { return fabs(t2 - t1) / CLOCKS_PER_SEC; }
+	double _diff(clock_t t1, clock_t t2) const;
 	std::string _format(std::string const &) const;
 	// for input history
 	std::ostringstream _inputValues, _inputDescriptions;
@@ -22,6 +24,7 @@ class SingletonLogger {
 	SingletonLogger(SingletonLogger const &);
 	SingletonLogger& operator=(SingletonLogger const &);
 public:
+	SingletonLoggerTimeUnits timeUnits = SingletonLoggerTimeUnits::sec;
 	bool mute;
 	std::ostringstream buf;
 	~SingletonLogger();
