@@ -37,6 +37,7 @@ public:
 	void wrn(std::string const &); // print warning
 	void wrn(); // print formatted buf 
 	void err(std::string const &); // print error
+	void pro(size_t, size_t); // progress bar
 	template <typename T>
 	SingletonLogger& inp(std::string const &, T&); // print input invite and get input value
 	bool yes(std::string const &); // true if get 'y' from stdin

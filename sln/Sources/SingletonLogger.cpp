@@ -4,11 +4,11 @@
 
 SingletonLogger::SingletonLogger() : _inputCounter(0), mute(false) {
 	rlutil::saveDefaultColor();
-	rlutil::setBackgroundColor(0);
-	//for (int i = 0; i < 16; i++) {
-	//	rlutil::setColor(i);
-	//	std::cout << i << " ";
-	//}
+	// rlutil::setBackgroundColor(0);
+	//	for (int i = 0; i < 16; i++) {
+	//		rlutil::setColor(i);
+	//		std::cout << i << " ";
+	//	}
 }
 
 SingletonLogger::~SingletonLogger() {
@@ -232,4 +232,20 @@ void SingletonLogger::exp(std::string const & fname) {
 	_inputValues.clear();
 	_inputDescriptions.str(std::string());
 	_inputDescriptions.clear();
+}
+
+void SingletonLogger::pro(size_t currentState, size_t lastState) {
+	if (mute) return;
+	size_t percent = round((100. * currentState) / lastState);
+	size_t numbOfBars = round(percent / 10.);
+	std::stringstream bar;
+	rlutil::setColor(14);
+	std::cout << '\r' << tab() << "[pro] ";
+	rlutil::setColor(7);
+	std::cout << "[ ";
+	size_t i;
+	for (i = 0; i < numbOfBars; ++i) std::cout << "| ";
+	for (; i < 10; ++i) std::cout << "  ";
+	std::cout << "] " << std::setfill(' ') << std::setw(3) << percent << '%';
+	if (currentState == lastState) std::cout << '\n';
 }
