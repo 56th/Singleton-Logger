@@ -13,6 +13,7 @@ enum class SingletonLoggerTimeUnits { min, sec };
 
 class SingletonLogger {
 	std::stack<time_t> _processes; // stack of started proccesses
+	time_t _proStartingTime;
 	bool _rec = false;
 	double _diff(clock_t t1, clock_t t2) const;
 	std::string _format(std::string const &) const;

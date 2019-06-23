@@ -236,6 +236,9 @@ void SingletonLogger::exp(std::string const & fname) {
 
 void SingletonLogger::pro(size_t currentState, size_t lastState) {
 	if (mute) return;
+	// if (currentState == 0)
+	if (currentState == 1)
+		_proStartingTime = clock();
 	size_t percent = round((100. * currentState) / lastState);
 	size_t numbOfBars = round(percent / 10.);
 	std::stringstream bar;
@@ -247,5 +250,10 @@ void SingletonLogger::pro(size_t currentState, size_t lastState) {
 	for (i = 0; i < numbOfBars; ++i) std::cout << "| ";
 	for (; i < 10; ++i) std::cout << "  ";
 	std::cout << "] " << std::setfill(' ') << std::setw(3) << percent << '%';
+
+//	auto proCurrentTime = clock();
+//	auto currentTimeDiff = _diff(_proStartingTime, proCurrentTime);
+//	auto estEndingTime = 100. * currentTimeDiff/ percent;
+
 	if (currentState == lastState) std::cout << '\n';
 }
