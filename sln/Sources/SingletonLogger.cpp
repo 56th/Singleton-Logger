@@ -56,23 +56,25 @@ void SingletonLogger::beg(std::string const & message) {
 	_processes.push(clock());
 }
 
-void SingletonLogger::end() {
-	if (mute) return;
-	if (_rec) {
-		_rec = false;
-		std::cout << '\n';
-	}
+double SingletonLogger::end() {
 	if (_processes.size() == 0) {
 		wrn("there is nothing to end");
-		return;
+		return 0.;
 	}
 	clock_t t = _processes.top();
 	_processes.pop();
+	auto res = _diff(clock(), t);
+    if (mute) return res;
+    if (_rec) {
+        _rec = false;
+        std::cout << '\n';
+    }
 	rlutil::setColor(9);
 	std::cout << tab() << "[end] ";
 	rlutil::setColor(15);
-	std::cout << std::fixed << std::setprecision(2) << _diff(clock(), t) << ' ' << (timeUnits == SingletonLoggerTimeUnits::sec ? 's' : 'm') << '\n';
+	std::cout << std::fixed << std::setprecision(2) << res << ' ' << (timeUnits == SingletonLoggerTimeUnits::sec ? 's' : 'm') << '\n';
 	rlutil::setColor(7);
+	return res;
 }
 
 void SingletonLogger::wrn(std::string const & message) {

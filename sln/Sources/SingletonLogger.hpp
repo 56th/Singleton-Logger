@@ -31,7 +31,7 @@ public:
 	~SingletonLogger();
 	static SingletonLogger& instance();
 	void beg(std::string const &); // begin new process
-	void end(); // terminate last process
+	double end(); // terminate last process
 	void log(std::string const &); // print message w/ "[log]" prefix
 	void log(); // print formatted buf 
 	void rec(); // print formatted buf w/ '\r'
