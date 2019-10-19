@@ -15,9 +15,10 @@ SingletonLogger::~SingletonLogger() {
 	rlutil::resetColor();
 }
 
-double SingletonLogger::_diff(clock_t t1, clock_t t2) const {
-	double diff = fabs(t2 - t1) / CLOCKS_PER_SEC;
-	if (timeUnits == SingletonLoggerTimeUnits::min) diff /= 60.;
+double SingletonLogger::_diff(timePoint t1, timePoint t2) const {
+	using namespace std::chrono;
+	auto diff = duration_cast<duration<double>>(t2 - t1).count();
+	if (timeUnits == TimeUnits::min) diff /= 60.;
 	return diff;
 }
 
@@ -53,7 +54,7 @@ void SingletonLogger::beg(std::string const & message) {
 	rlutil::setColor(15);
 	std::cout << _format(message) << " . . .\n";
 	rlutil::setColor(7);
-	_processes.push(clock());
+	_processes.push(std::chrono::high_resolution_clock::now());
 }
 
 double SingletonLogger::end() {
@@ -61,9 +62,9 @@ double SingletonLogger::end() {
 		wrn("there is nothing to end");
 		return 0.;
 	}
-	clock_t t = _processes.top();
+	auto t = _processes.top();
 	_processes.pop();
-	auto res = _diff(clock(), t);
+	auto res = _diff(t, std::chrono::high_resolution_clock::now());
     if (mute) return res;
     if (_rec) {
         _rec = false;
@@ -72,7 +73,7 @@ double SingletonLogger::end() {
 	rlutil::setColor(9);
 	std::cout << tab() << "[end] ";
 	rlutil::setColor(15);
-	std::cout << std::fixed << std::setprecision(2) << res << ' ' << (timeUnits == SingletonLoggerTimeUnits::sec ? 's' : 'm') << '\n';
+	std::cout << std::fixed << std::setprecision(2) << res << ' ' << (timeUnits == TimeUnits::sec ? 's' : 'm') << '\n';
 	rlutil::setColor(7);
 	return res;
 }
@@ -240,7 +241,7 @@ void SingletonLogger::pro(size_t currentState, size_t lastState) {
 	if (mute) return;
 	// if (currentState == 0)
 	if (currentState == 1)
-		_proStartingTime = clock();
+		_proStartingTime = std::chrono::high_resolution_clock::now();
 	size_t percent = round((100. * currentState) / lastState);
 	size_t numbOfBars = round(percent / 10.);
 	std::stringstream bar;
@@ -253,7 +254,7 @@ void SingletonLogger::pro(size_t currentState, size_t lastState) {
 	for (; i < 10; ++i) std::cout << "  ";
 	std::cout << "] " << std::setfill(' ') << std::setw(3) << percent << '%';
 
-//	auto proCurrentTime = clock();
+//	auto proCurrentTime = std::chrono::high_resolution_clock::now();
 //	auto currentTimeDiff = _diff(_proStartingTime, proCurrentTime);
 //	auto estEndingTime = 100. * currentTimeDiff/ percent;
 

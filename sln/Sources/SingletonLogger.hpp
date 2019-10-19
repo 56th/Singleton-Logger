@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 #include <sstream>
-#include <ctime>
+#include <chrono> 
 #include <string>
 #include <stack>
 #include <vector>
@@ -9,13 +9,15 @@
 #include "rlutil.h" // https://github.com/tapio/rlutil
 // for cross–platform terminal text coloring
 
-enum class SingletonLoggerTimeUnits { min, sec };
-
 class SingletonLogger {
-	std::stack<time_t> _processes; // stack of started proccesses
-	time_t _proStartingTime;
+public:
+	enum class TimeUnits { min, sec };
+private:
+	using timePoint = std::chrono::high_resolution_clock::time_point;
+	std::stack<timePoint> _processes; // stack of started proccesses
+	timePoint _proStartingTime;
 	bool _rec = false;
-	double _diff(clock_t t1, clock_t t2) const;
+	double _diff(timePoint t1, timePoint t2) const;
 	std::string _format(std::string const &) const;
 	// for input history
 	std::ostringstream _inputValues, _inputDescriptions;
@@ -25,7 +27,7 @@ class SingletonLogger {
 	SingletonLogger(SingletonLogger const &);
 	SingletonLogger& operator=(SingletonLogger const &);
 public:
-	SingletonLoggerTimeUnits timeUnits = SingletonLoggerTimeUnits::sec;
+	TimeUnits timeUnits = TimeUnits::sec;
 	bool mute;
 	std::ostringstream buf;
 	~SingletonLogger();
