@@ -44,6 +44,7 @@ SingletonLogger& SingletonLogger::instance() {
 }
 
 void SingletonLogger::beg(std::string const & message) {
+	_processes.push(std::chrono::high_resolution_clock::now());
 	if (mute) return;
 	if (_rec) {
 		_rec = false;
@@ -54,7 +55,6 @@ void SingletonLogger::beg(std::string const & message) {
 	rlutil::setColor(15);
 	std::cout << _format(message) << " . . .\n";
 	rlutil::setColor(7);
-	_processes.push(std::chrono::high_resolution_clock::now());
 }
 
 double SingletonLogger::end() {
@@ -79,6 +79,7 @@ double SingletonLogger::end() {
 }
 
 void SingletonLogger::wrn(std::string const & message) {
+    if (mute) return;
 	if (_rec) {
 		_rec = false;
 		std::cout << '\n';
@@ -90,15 +91,17 @@ void SingletonLogger::wrn(std::string const & message) {
 }
 
 void SingletonLogger::wrn() {
-	if (_rec) {
-		_rec = false;
-		std::cout << '\n';
-	}
-	rlutil::setColor(13);
-	std::cout << tab() << "[wrn] ";
-	rlutil::setColor(7);
-	std::cout << _format(buf.str()) << '\n';
-	// clear buf
+    if (!mute) {
+        if (_rec) {
+            _rec = false;
+            std::cout << '\n';
+        }
+        rlutil::setColor(13);
+        std::cout << tab() << "[wrn] ";
+        rlutil::setColor(7);
+        std::cout << _format(buf.str()) << '\n';
+    }
+    // clear buf
 	buf.str(std::string());
 	buf.clear();
 }
@@ -127,35 +130,29 @@ void SingletonLogger::log(std::string const & message) {
 }
 
 void SingletonLogger::log() {
-	if (mute) {
-		buf.str(std::string());
-		buf.clear();
-		return;
-	}
-	if (_rec) {
-		_rec = false;
-		std::cout << '\n';
-	}
-	rlutil::setColor(11);
-	std::cout << tab() << "[log] ";
-	rlutil::setColor(7);
-	std::cout << _format(buf.str()) << '\n';
+	if (!mute) {
+        if (_rec) {
+            _rec = false;
+            std::cout << '\n';
+        }
+        rlutil::setColor(11);
+        std::cout << tab() << "[log] ";
+        rlutil::setColor(7);
+        std::cout << _format(buf.str()) << '\n';
+    }
 	// clear buf
 	buf.str(std::string());
 	buf.clear();
 }
 
 void SingletonLogger::rec() {
-	if (mute) {
-		buf.str(std::string());
-		buf.clear();
-		return;
-	}
-	_rec = true;
-	rlutil::setColor(11);
-	std::cout << '\r' << tab() << "[log] ";
-	rlutil::setColor(7);
-	std::cout << _format(buf.str());
+	if (!mute) {
+        _rec = true;
+        rlutil::setColor(11);
+        std::cout << '\r' << tab() << "[log] ";
+        rlutil::setColor(7);
+        std::cout << _format(buf.str());
+    }
 	// clear buf
 	buf.str(std::string());
 	buf.clear();
