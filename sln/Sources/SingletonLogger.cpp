@@ -44,17 +44,18 @@ SingletonLogger& SingletonLogger::instance() {
 }
 
 void SingletonLogger::beg(std::string const & message) {
+	if (!mute) {
+        if (_rec) {
+            _rec = false;
+            std::cout << '\n';
+        }
+        rlutil::setColor(9);
+        std::cout << tab() << "[beg] ";
+        rlutil::setColor(15);
+        std::cout << _format(message) << " . . .\n";
+        rlutil::setColor(7);
+    }
 	_processes.push(std::chrono::high_resolution_clock::now());
-	if (mute) return;
-	if (_rec) {
-		_rec = false;
-		std::cout << '\n';
-	}
-	rlutil::setColor(9);
-	std::cout  << tab() << "[beg] ";
-	rlutil::setColor(15);
-	std::cout << _format(message) << " . . .\n";
-	rlutil::setColor(7);
 }
 
 double SingletonLogger::end() {
